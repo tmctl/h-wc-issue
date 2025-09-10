@@ -4,6 +4,8 @@ import {
   useWallet,
 } from "@buidlerlabs/hashgraph-react-wallets";
 import { HashpackConnector } from "@buidlerlabs/hashgraph-react-wallets/connectors";
+import {verifySignerSignature, prefixMessageToSign } from '@hashgraph/hedera-wallet-connect'
+import type { SignerSignature } from "@hashgraph/sdk";
 
 const messageToSign = "Hello, world!";
 
@@ -14,10 +16,20 @@ export default function Home() {
   async function signAndVerify() {
     await connect();
     const result = await signAuth(messageToSign);
+    console.log(result)
+    const signatureMap:SignerSignature = {
+      publicKey: result.publicKey,
+      signature: result.signature as Uint8Array,
+      accountId: result.accountId
+    }
+    const option1 = verifySignerSignature(btoa(messageToSign), signatureMap, result.publicKey);
+    console.log(option1);
+
     const verified = result.publicKey.verify(
-      Buffer.from(messageToSign),
+      Buffer.from(prefixMessageToSign(btoa(messageToSign))),
       result.signature
     );
+
     alert(`The signature was ${verified ? "verified" : "not verified"}`);
   }
 
