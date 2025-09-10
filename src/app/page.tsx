@@ -21,16 +21,18 @@ export default function Home() {
       publicKey: result.publicKey,
       signature: result.signature as Uint8Array,
       accountId: result.accountId
-    }
+    };
     const option1 = verifySignerSignature(btoa(messageToSign), signatureMap, result.publicKey);
     console.log(option1);
 
+    const signedMessage = prefixMessageToSign(btoa(messageToSign));
+    console.log(signedMessage);
     const verified = result.publicKey.verify(
-      Buffer.from(prefixMessageToSign(btoa(messageToSign))),
+      Buffer.from(signedMessage),
       result.signature
     );
 
-    alert(`The signature was ${verified ? "verified" : "not verified"}`);
+    alert(`The signature was ${verified ? "verified" : "not verified"} for signedMessage: "${signedMessage}"`);
   }
 
   return (
